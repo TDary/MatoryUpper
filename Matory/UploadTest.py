@@ -2,25 +2,18 @@ import argparse
 import os
 import socket
 import time
-import win32process
 import zipfile
-import win32gui
 import gzip
 import zipfile
 import json
-import requests
 import datetime
 import shutil
 import re
 import wmi
-import minio_log_del
 import random
 import minio
 import importlib
 import threading
-# from ScreenShotter import Platform, ScreenShooter
-from u3driver import AltrunUnityDriver, By
-from u3driver.commands.ObjectCommands import parent
 
 import traceback
 
@@ -390,7 +383,7 @@ if __name__ == "__main__":
             uuID = input("请输入uuid：")
             
         if device == "":
-                udriver = AltrunUnityDriver("127.0.0.1","","127.0.0.1",TCP_PORT=13000,timeout=60)
+                udriver = Matory("127.0.0.1","","127.0.0.1",TCP_PORT=13000,timeout=60)
                 # screenShooter = ScreenShooter(Platform.PC)
         else:
             if ip == "":
