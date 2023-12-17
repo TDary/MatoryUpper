@@ -27,10 +27,11 @@ class MatoryConnect(object):
 
                 self.connect = True
                 time.sleep(1)
-                self.GetServerVersion(self.udriver)
+                self.GetServerVersion()
 
-                response = self.udriver.recv(2048)
+                response = json.loads(self.udriver.recv(2048).decode())
                 print(response)
+                return
             except Exception as e:
                 print(e)
                 print('MatoryServer not running on port ' + str(self.TCP_PORT) +
