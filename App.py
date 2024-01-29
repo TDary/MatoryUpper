@@ -1,10 +1,16 @@
 from Runner import MaRunner
 import traceback
-
+import json
 if __name__ == "__main__":
     try:
-        udriver = MaRunner.MatoryConnect("192.168.31.28",2666,60)
-        
+        udriver = MaRunner.MatoryConnect("10.11.144.31",2666,60)
+        res = udriver.GetAllButton()["Data"]
+        for item in json.loads(res):
+            if "LEVEL SELECT" in item["ButtonName"]:
+                id = item["InstanceId"]
+                udriver.ClickButtonById(id=id)
+                break
+        udriver.CloseConnect()
         # time.sleep(1)
         # message = {
         #     'FuncName':'GetSdkVersion',
