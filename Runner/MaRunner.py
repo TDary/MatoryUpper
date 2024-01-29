@@ -33,8 +33,7 @@ class MatoryConnect(object):
                 time.sleep(1)
                 print("获取SDK版本号——")
                 print("Sdk Version:"+self.GetServerVersion()["Data"])
-
-                return
+                break
             except Exception as e:
                 print(e)
                 print('MatoryServer not running on port ' + str(self.TCP_PORT) +
