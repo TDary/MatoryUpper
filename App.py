@@ -4,7 +4,7 @@ import traceback
 if __name__ == "__main__":
     try:
         udriver = MaRunner.MatoryConnect("192.168.31.28",2666,60)
-
+        
         # time.sleep(1)
         # message = {
         #     'FuncName':'GetSdkVersion',

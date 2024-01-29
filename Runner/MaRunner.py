@@ -60,3 +60,21 @@ class MatoryConnect(object):
         }
         msg = json.dumps(message)
         self.udriver.sendall(msg.encode())
+    def FindText(self,textname:str)->None:
+        message = {
+            'FuncName' : 'Find_Text',
+            'FuncArgs' : [f'{textname}']
+        }
+        msg = json.dumps(message)
+        self.udriver.sendall(msg.encode())
+        response = json.loads(self.udriver.recv(2048).decode())
+        print(response)
+    def GetAllButton(self)->None:
+        message = {
+            'FuncName' : 'Find_Text',
+            'FuncArgs' : []
+        }
+        msg = json.dumps(message)
+        self.udriver.sendall(msg.encode())
+        response = json.loads(self.udriver.recv(2048).decode())
+        print(response)
