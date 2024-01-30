@@ -112,7 +112,7 @@ class MatoryConnect(object):
     '''
     触发一次UI单击操作,通过路径触发
     '''
-    def ClickButtonByPath(self,UIPath):
+    def ClickButtonByPath(self,UIPath:str):
         self.message['FuncName'] = 'ClickOne'
         self.message['FuncArgs'] = ['leftclick',f'{UIPath}','path']
         return self.SendMessageModule(self.message)
@@ -120,7 +120,15 @@ class MatoryConnect(object):
     '''
     触发一次UI单击操作,通过InstanceId触发
     '''
-    def ClickButtonById(self,id):
+    def ClickButtonById(self,id:int):
         self.message['FuncName'] = 'ClickOne'
         self.message['FuncArgs'] = ['click',f'{id}','id']
+        return self.SendMessageModule(self.message)
+
+    '''
+    触发一次点击事件，通过模拟鼠标形式
+    '''
+    def ClickButtonBySimulate(self,id:int):
+        self.message['FuncName'] = 'ClickOneBySimulate'
+        self.message['FuncArgs'] = ['left',f'{id}']
         return self.SendMessageModule(self.message)
