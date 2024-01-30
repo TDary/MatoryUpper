@@ -56,11 +56,19 @@ class MatoryConnect(object):
         return response
 
     '''
-    发送采集消息模块
+    发送开始采集消息模块
     '''
-    def ProfilerGather(self,args)->None:
+    def ProfilerGather(self,args):
         self.message['FuncName'] = 'Gather_Profiler'
         self.message['FuncArgs'] = ['Gather_Profiler','1',args]
+        return self.SendMessageModule(self.message)
+
+    '''
+    发送停止采集消息模块
+    '''
+    def StopProfilerGather(self):
+        self.message['FuncName'] = 'Gather_Profiler'
+        self.message['FuncArgs'] = ['Gather_Profiler','0']
         return self.SendMessageModule(self.message)
 
     '''
