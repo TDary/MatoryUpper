@@ -122,5 +122,5 @@ class MatoryConnect(object):
     '''
     def ClickButtonById(self,id):
         self.message['FuncName'] = 'ClickOne'
-        self.message['FuncArgs'] = ['leftclick',f'{id}','id']
+        self.message['FuncArgs'] = ['click',f'{id}','id']
         return self.SendMessageModule(self.message)
