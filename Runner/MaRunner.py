@@ -3,7 +3,7 @@ import time
 import json
 
 class MatoryConnect(object):
-    def __init__(self,connectip="127.0.0.1",port=2666,timeout=60,log_flag=False):
+    def __init__(self,device,connectip="127.0.0.1",port=2666,timeout=60,log_flag=False):
         '''
         :param connectip: Hostname of a socket service.
         :param port: TCP Port of machine.
@@ -139,4 +139,12 @@ class MatoryConnect(object):
     def ClickButtonBySimulate(self,id:int):
         self.message['FuncName'] = 'ClickOneBySimulate'
         self.message['FuncArgs'] = ['left',f'{id}']
+        return self.SendMessageModule(self.message)
+
+    '''
+    触发一次内存快照截取
+    '''
+    def TakeMemorySnapShot(self,type:str,filePath:str):
+        self.message['FuncName'] = 'CaptureMemorySnap'
+        self.message['FuncArgs'] = [f'{type}',f'{filePath}']
         return self.SendMessageModule(self.message)
