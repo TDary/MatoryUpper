@@ -17,14 +17,6 @@ import threading
 
 import traceback
 
-
-def zip_files(folder_path, output_path):
-     # 获取源文件的基本名称
-    file_name = os.path.basename(folder_path)
-    with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        zipf.write(folder_path, arcname=file_name)
-
-
 def uploadTest():
     global isStop
     global udriver
@@ -101,125 +93,6 @@ def uploadTest():
                 client_socket.sendall(stopMsg.encode())
             break
 
-# #上传文件
-# def upload_files():
-#     global udriver
-#     global fileslist
-#     global url
-#     global client
-#     global child_url
-#     global gameID
-#     global uuID
-#     global device
-#     global upload_time
-#     fileslist = []
-#     record = udriver.profile_check()
-#     time.sleep(1)
-#     try:
-#         if device != "":
-#             print("暂不支持此设备类型")
-#             # if len(record):
-#             #     for file in record:
-#             #         c = file['name'].split('-')
-#             #         a = c[1] + '-' + c[2] + '-' + c[3] + " " + "" + c[4] + ":" + c[5] + ":"  + c[6]
-#             #         timeArray = time.strptime(a, "%Y-%m-%d %H:%M:%S")
-#             #         timestamp = time.mktime(timeArray)
-#             #         files = str(timestamp).split('.')[0] + ".raw"
-
-#             #         if files not in fileslist:
-#             #             fileslist.append(files)
-
-#             #         if not os.path.exists(ROOT_DIR + "/record"):  # 将文件拉到本地
-#             #             os.makedirs(ROOT_DIR + "/record")
-#             #         cmd = os.popen(f"{adbPath} -s " + device + " pull " + file['path'] + '/' + file['name'] + ".raw" + " " + ROOT_DIR + "/record").read()
-#             #         print("获取" + file['name'] + ".raw" + "到本地成功")
-
-#             #         path = os.path.join(ROOT_DIR,"record",file['name'] + ".raw") # 本地文件路径
-
-#             #         url = "10.11.144.31:8001" # 存储服务器路径
-#             #         child_url = "rawdata"# 存储桶名
-#             #         print("存储桶：" + child_url)
-#             #         client = Minio(url, access_key="cdr", secret_key="cdrmm666!@#", secure=False) # 上传至存储桶
-#             #         try:
-#             #             if client.bucket_exists(bucket_name=child_url):  # bucket_exists：检查桶是否存在
-#             #                 pass
-#             #             else:
-#             #                 client.make_bucket(child_url)
-#             #                 print("存储桶创建成功")
-#             #         except Exception as err:
-#             #             print(err)
-
-#             #         start_upload_time = datetime.datetime.now()
-#             #         upload_time.append({'name':files,'time':start_upload_time,'size':"123456"})
-#             #         client.fput_object(child_url,files,path) 
-#             #         print("上传" + files + "到服务器成功")
-                        
-#             #         os.remove("record/" + file['name'] + ".raw")
-#             #         print("删除本地" + file['name'] + ".raw" + "成功")
-#         else:
-#             if len(record):
-#                 for file in record:
-#                     c = file['name'].split('-')
-#                     a = c[1] + '-' + c[2] + '-' + c[3] + " " + "" + c[4] + ":" + c[5] + ":"  + c[6]
-#                     timeArray = time.strptime(a, "%Y-%m-%d %H:%M:%S")
-#                     timestamp = time.mktime(timeArray)
-#                     files = str(timestamp).split('.')[0] + ".raw"
-
-#                     if files not in fileslist:
-#                         fileslist.append(files)
-
-#                     path = os.path.join(file['path'],file['name'] + ".raw") # 本地文件路径
-
-#                     url = "10.11.144.31:8001" # 存储服务器路径
-#                     child_url = "rawdata"# 存储桶名
-#                     print("存储桶：" + child_url)
-#                     client = Minio(url, access_key="cdr", secret_key="cdrmm666!@#", secure=False) # 上传至存储桶
-#                     try:
-#                         if client.bucket_exists(bucket_name=child_url):  # bucket_exists：检查桶是否存在
-#                             pass
-#                         else:
-#                             client.make_bucket(child_url)
-#                             print("存储桶创建成功")
-#                     except Exception as err:
-#                         print(err)
-
-#                     start_upload_time = datetime.datetime.now()
-#                     upload_time.append({'name':files,'time':start_upload_time,'size':"123456"})
-#                     client.fput_object(child_url,files,path) 
-#                     print("上传" + files + "到服务器成功")
-
-#                     os.remove(file['path'] + "/" + file['name'] + ".raw")
-#                     print("删除本地" + file['name'] + ".raw" + "成功")
-#     except:
-#         print("文件上传失败")
-#         traceback.print_exception()
-
-# #Upload Screen
-# def UploadScreen():
-#     try:
-#         #真正上传截图步骤
-#         time.sleep(2)
-#         zip_screen()
-#         shutil.rmtree("screen")
-#         url = "10.11.144.31:8001" # 存储服务器路径
-#         child_url = "rawdata"# 存储桶名
-#         print("存储桶：" + child_url)
-#         Objectfilename = uuID + "/" +"screen.zip"
-#         client = Minio(url, access_key="cdr", secret_key="cdrmm666!@#", secure=False) # 上传至存储桶
-#         client.fput_object(child_url,Objectfilename,"./screen.zip") 
-#         print("上传" + Objectfilename + "到服务器成功")
-
-#         os.remove("screen.zip")
-#     except:
-#         print("截图上传失败")
-#         traceback.print_exception()
-
-# #压缩截图成zip
-# def zip_screen():
-#     with zipfile.ZipFile("screen.zip", "w", zipfile.ZIP_DEFLATED) as f:
-#         for root, _, file_names in os.walk("screen"):
-#             for filename in file_names:
-#                 f.write(os.path.join(root, filename), filename)
 
 #数据解析+上传设备信息
 def profile():
@@ -262,25 +135,6 @@ def profile():
 
     except Exception as e:
         traceback.print_exception(e)
-
-# 自动生成uuid
-def choice():
-    uid = ''
-
-    day = str(datetime.datetime.now().day)
-    if len(day) != 2:
-        day = '0'+ day
-    month = str(datetime.datetime.now().month)
-    if len(month) != 2:
-        month = '0'+ month
-    date = month + day
-    for i in range(0,2):
-        if random.randint(0,1)==0:
-            uid=uid+chr(random.randint(97,122))
-        else:
-            uid=uid+str(random.randint(0,9))
-    uid = date + uid
-    return uid
 
 # def get_all_window():
 #     hWndList = []

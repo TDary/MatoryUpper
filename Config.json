@@ -1,0 +1,14 @@
+{
+    "minioserver":
+    {
+        "url":"10.11.144.31:8001",
+        "access_key":"cdr",
+        "secret_key":"cdrmm666!@#",
+        "bucket":"rawdata"
+    },
+    "masterserver":
+    {
+        "ip":"10.11.144.31",
+        "port":"6950"
+    }
+}

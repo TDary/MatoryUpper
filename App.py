@@ -5,7 +5,7 @@ import time
 
 if __name__ == "__main__":
     try:
-        udriver = MaRunner.MatoryConnect("10.11.144.31",2666,60)
+        udriver = MaRunner.MatoryConnect("192.168.0.107",2666,60)
 
         # res = udriver.GetAllButton()["Data"]
         # for item in json.loads(res):
@@ -16,14 +16,14 @@ if __name__ == "__main__":
 
         #开始采集
         uuID = "testcdr"
-        temp_data = {"path":"E:/files"}
+        temp_data = {"path":"D:\\files"}
         collectiondata={"collection": {},"data": {}}
         collection = {"profiler_gather":json.dumps(temp_data)}
         collectiondata["collection"]=json.dumps(collection)
-        collectiondata["data"]=json.dumps({"uuid": uuID,"path": "E:/files/"})
+        collectiondata["data"]=json.dumps({"uuid": uuID,"path": "D:\\files\\"})
         udriver.ProfilerGather(json.dumps(collectiondata))
-        # time.sleep(30)
-        # udriver.StopProfilerGather()
+        time.sleep(30)
+        udriver.StopProfilerGather()
         time.sleep(1)
         udriver.CloseConnect()
     except:
