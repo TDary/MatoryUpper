@@ -21,7 +21,7 @@ class UnityProfile():
                 self.connectState = True
                 time.sleep(1)
                 message = 'markeid?collector'
-                print(self.SendMessageModule(self.udriver,message))
+                self.SendMessageModule(self.udriver,message)
                 
                 return self.udriver
             except Exception as e:
@@ -42,9 +42,20 @@ class UnityProfile():
                       "&unityVersion=",unityversion,"&rawFiles=","&bucket=",bucketname,"&analyzeType=",analyzetype,
                       "&gameName=",gamename,"&caseName=",casename,"&collcetorIp=",collectorip]
         requestUrl = "".join(requestUrlStrList)
-        self.SendMessageModule(sokcetObj,requestUrl)
-        
+        return self.SendMessageModule(sokcetObj,requestUrl)
+    
+    # 发送停止采集消息
+    def SendtoStopGather(self,socketObj:object,uuID:str,lastfile:str):
+        requestUrlStrList = [self.endGather,"uuid=",uuID,"&lastfile=",lastfile]
+        requestUrl = "".join(requestUrlStrList)
+        return self.SendMessageModule(socketObj,requestUrl)
 
+    # 发送客户端请求解析消息
+    def SendtoRequestAnalyze(self,socketObj:object,uuID:str,zipfile:str,rafilename:str,unityversion:str,analyzebucket:str,analyzetype):
+        requestUrlStrList = [self.sendRequestAnalyze,"uuid=",uuID,"&rawfile=",zipfile,"&objectname=",
+                             rafilename,"&unityversion=",unityversion,"&analyzebucket=",analyzebucket,"&analyzetype=",analyzetype]
+        requestUrl = "".join(requestUrlStrList)
+        return self.SendMessageModule(socketObj,requestUrl)
 
     # 发送socket消息
     def SendMessageModule(self,sokcetObj:socket,msg:str):
