@@ -14,8 +14,9 @@ import random
 import minio
 import importlib
 import threading
-
+import StaticData
 import traceback
+import Runner.MaRunner
 
 def uploadTest():
     global isStop
@@ -105,26 +106,12 @@ def profile():
     global version
     global device
     global client_socket
+    global devicetype
     print("发送开始采集消息")
     try:
         list1 = []
 
-        if device == "":
-            w = wmi.WMI()
-            for BIOSs in w.WIN32_ComputerSystem():
-                list1.append("电脑名称: %s" %BIOSs.Caption)
-            for BIOS in w.Win32_BIOS():
-                list1.append("主板型号: %s" %BIOS.SerialNumber)
-            for processor in w.Win32_Processor():
-                list1.append("CPU型号: %s" % processor.Name.strip())
-            for xk in w.Win32_VideoController():
-                list1.append("显卡名称: %s" %xk.name)
-            deviceinfo = " ".join(list1)
-            print(deviceinfo)
-        else:
-            result = os.popen("adb shell getprop ro.product.model").read()
-            deviceinfo = result.strip()
-            print(deviceinfo)
+        deviceinfo = StaticData.GetDevicesData(devicetype)
 
         requestUrl = "startanalyze?" + "&device="+ deviceinfo + "&gameid=" + gameID + "&uuid=" + uuID + "&unityVersion=2022.3.2f1" + "&rawFiles=" +"&bucket=rawdata&analyzeType=funprofiler&gameName=CB&caseName=ceshi&collcetorIp=10.11.144.31"
         client_socket.sendall(requestUrl.encode())
@@ -179,7 +166,6 @@ if __name__ == "__main__":
     ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
     adbPath = os.path.join(ROOT_DIR,'adb.exe')
     screenShooter = None
-    upload_url = "http://10.11.144.31:6950/"
     delete_files = ''
     gameID = ''   
     uuID = ''
@@ -191,30 +177,6 @@ if __name__ == "__main__":
     upload_time = []
     version = ''
     app = ''
-
-
-    # 服务器地址和端口
-    server_addr = ('10.11.144.31',6950)
-
-    # 创建Socket对象
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    try:
-        # 连接到服务器
-        client_socket.connect(server_addr)
-        
-        print('Connected to server')
-
-        # 发送消息到服务器
-        message = 'markeid?collector'
-        client_socket.sendall(message.encode())
-
-        # 接收从服务器返回的消息
-        response = client_socket.recv(2048)
-        print('Received message from server:', response.decode())
-
-    except socket.error as e:
-        print('Error occurred:', str(e))
     
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", help="ip")  #命令行参数 -i ip地址
@@ -224,11 +186,13 @@ if __name__ == "__main__":
     ip = args.i or ""
     device = args.s or ""
 
+    gatherObj = StaticData.UnityProfile(serverip="10.11.144.31",port="6950",timeout=60)  #连接采集服务器
+    
     print("您是否开启采集数据功能？y/n")
     flag = input()
     if flag == "y":
         gameID = "e40280a0"
-        uid = choice()
+        uid = StaticData.GetUUID()
         print("随机生成的uuid为" + uid +",是否使用？y/n")
         choicUUID = input()
         if choicUUID == "y":
@@ -237,7 +201,7 @@ if __name__ == "__main__":
             uuID = input("请输入uuid：")
             
         if device == "":
-                udriver = Matory("127.0.0.1","","127.0.0.1",TCP_PORT=13000,timeout=60)
+                udriver = Runner.MaRunner.MatoryConnect(device=device,connectip="127.0.0.1",port=2666,timeout=60)
                 # screenShooter = ScreenShooter(Platform.PC)
         else:
             if ip == "":
@@ -252,20 +216,17 @@ if __name__ == "__main__":
                         res = os.popen(f'{adbPath} -s {device} shell netstat').read()
                         ip = res.split('udp')[1].split(':bootpc')[0].split(' ')[-1]
 
-            udriver = AltrunUnityDriver(device,"",ip,TCP_PORT=13000,timeout=60)
+            udriver = Runner.MaRunner.MatoryConnect(device,ip,por=13000,timeout=60)
 
         startTime = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
 
-        #开始采集
-        temp_data = {"path":"E:\\files"}
-        collectiondata={
-                "collection": { #"ubox": {}
-                },"data": {#"uuid": uuID,"path": "E:/CollectData"
-                }}
-        collection = {"ubox":json.dumps(temp_data)}
+        # 开始采集
+        temp_data = {"path":"D:\\files"}
+        collectiondata={"collection": {},"data": {}}
+        collection = {"profiler_gather":json.dumps(temp_data)}
         collectiondata["collection"]=json.dumps(collection)
-        collectiondata["data"]=json.dumps({"uuid": uuID,"path": "E:\\rawdata\\"})
-        udriver.record_profile("",json.dumps(collectiondata))
+        collectiondata["data"]=json.dumps({"uuid": uuID,"path": "D:\\files\\"})
+        udriver.ProfilerGather("",json.dumps(collectiondata))
         profile() #请求开始采集
 
         # 上传文件

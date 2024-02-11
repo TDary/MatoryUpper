@@ -7,7 +7,7 @@ import json
 import time
 
 class UnityProfile():
-    def __init__(self,connectip:str,port:str,timeout=60):
+    def __init__(self,serverip:str,port:str,timeout=60):
         self.beginAnalyze = "startanalyze?"
         self.endGather = "stopanalyze?"
         self.sendRequestAnalyze = "requestanalyze?"
@@ -15,7 +15,7 @@ class UnityProfile():
         while timeout > 0:
             try:
                 self.udriver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.udriver.connect((connectip, port))
+                self.udriver.connect((serverip, port))
                 self.udriver.settimeout(timeout)
 
                 self.connectState = True
