@@ -1,40 +1,28 @@
 import argparse
 import os
-import socket
 import time
-import zipfile
-import gzip
-import zipfile
 import json
-import datetime
-import shutil
-import re
-import wmi
-import random
-import minio
-import importlib
 import threading
 import StaticData
 import traceback
 import Runner.MaRunner
+import MinioSdk
 
-def uploadTest():
+# 控制采集和上传模块
+def GatherUploadModule():
     global isStop
     global udriver
-    global url
-    global client
-    global child_url
     global gameID
     global uuID
-    global client_socket
-    url = '10.11.144.31:8001' # 存储服务器路径
-    child_url = 'rawdata'# 存储桶名
-    zhanghao = 'cdr'
-    mima = 'cdrmm666!@#'
-    client = minio.Minio(endpoint=url,access_key=zhanghao,secret_key=mima,secure=False)
+    global gatherObj
+    global ConfigData
+    global analyzetype
+    global unityversion
+    bucket = ConfigData["minioserver"]["rawbucket"]
+    client = MinioSdk.Minio_SDK(url=ConfigData["minioserver"]["url"],bucketName=bucket,access_key=ConfigData["minioserver"]["access_key"],secret_key=ConfigData["minioserver"]["secret_key"])
     while True:
         time.sleep(1)
-        record = udriver.profile_check()
+        record = udriver.CheckProfiler()
         fileslist = []
         if record["ubox"]!=[]:
             datas = json.loads(record["ubox"])
@@ -53,31 +41,16 @@ def uploadTest():
                     fileslist.append(zipfile)
 
                 # 压缩文件夹
-                zip_files(newnamePath,zipfilePath)
+                StaticData.Zip_files(newnamePath,zipfilePath)
 
                 uploadObjectName = uuID + "/" + zipfile
 
-                try:
-                    if client.bucket_exists(bucket_name=child_url):  # bucket_exists：检查桶是否存在
-                        pass
-                    else:
-                        client.make_bucket(child_url)
-                        # print("存储桶创建成功")
-                except Exception as err:
-                    print(err)
+                client.UploadItem(objName=uploadObjectName,filePath=zipfilePath,contentType="application/zip")
 
-                # start_upload_time = datetime.datetime.now()
-                # upload_time.append({'name':files,'time':start_upload_time,'size':"123456"})
-                # client.put_object(child_url,uploadObjectName,zipfilePath,)  content_type="application/zip"
-                client.fput_object(bucket_name=child_url,object_name=uploadObjectName,file_path=zipfilePath,content_type="application/zip")
-                print("上传" + zipfilePath + "到服务器成功")
                 #请求解析
-                rafilename = uuID+"/"+zipfile
-                requestMsg = "requestanalyze?uuid="+uuID+"&rawfile="+zipfile+"&objectname="+rafilename+"&unityversion=2022.3.2f1&analyzebucket="+child_url+"&analyzetype=funprofiler"
-                client_socket.sendall(requestMsg.encode())
-                # 接收从服务器返回的消息
-                response = client_socket.recv(2048)
-                print('Received message from server:', response.decode())
+                rawfilename = uuID+"/"+zipfile
+                gatherObj.SendtoRequestAnalyze(socketObj=gatherObj,uuID=uuID,zipfile=zipfile,rawfilename=rawfilename,
+                                               unityversion=unityversion,analyzebucket=bucket,analyzetype=analyzetype)
 
                 #删除源文件
                 os.remove(zipfilePath)
@@ -89,75 +62,36 @@ def uploadTest():
             if len(fileslist) !=0:
                 thelastFile = fileslist[len(fileslist) - 1]
                 #发送停止采集消息
-                #r = requests.get(upload_url + "stopanalyze?" +"uuid=" + str(uuID) + "&lastfile=" + thelastFile) # 停止信号
-                stopMsg = "stopanalyze?" +"uuid=" + str(uuID) + "&lastfile=" + thelastFile
-                client_socket.sendall(stopMsg.encode())
+                gatherObj.SendtoStopGather(socketObj=gatherObj,uuID=uuID,lastfile=thelastFile)
             break
 
 
 #数据解析+上传设备信息
-def profile():
-    global url
+def AnalyzeToProfile():
     global gameID
     global uid
-    global version
-    global fileslist
+    global unityversion
+    global gatherObj
     global uuID
-    global version
     global device
-    global client_socket
     global devicetype
-    print("发送开始采集消息")
+    global ConfigData
     try:
-        list1 = []
-
+        rawfiles = ""
+        analyzetype = "funprofiler"
         deviceinfo = StaticData.GetDevicesData(devicetype)
-
-        requestUrl = "startanalyze?" + "&device="+ deviceinfo + "&gameid=" + gameID + "&uuid=" + uuID + "&unityVersion=2022.3.2f1" + "&rawFiles=" +"&bucket=rawdata&analyzeType=funprofiler&gameName=CB&caseName=ceshi&collcetorIp=10.11.144.31"
-        client_socket.sendall(requestUrl.encode())
-        #r = requests.get(upload_url + "startanalyze?" + "&device="+ deviceinfo + "&gameid=" + gameID + "&uuid=" + uuID + "&unityVersion=2021.3.1f1" + "&rawFiles=" +"&bucket=rawdata&anatype=funprofiler&gameName=CB&caseName=ceshi")
-
-        print("已成功请求采集解析数据")
-        return "已成功请求解析数据"
+        res = gatherObj.SendtoBeginGather(sokcetObj=gatherObj,deviceinfo=deviceinfo,gameID=gameID,uuID=uuID,
+                                          unityversion=unityversion,rawfiles=rawfiles,bucketname=ConfigData["minioserver"]["rawbucket"],
+                                          analyzetype=analyzetype,gamename="CB",casename="ceshi",collectorip="192.168.0.110") 
+        return res
 
     except Exception as e:
         traceback.print_exception(e)
 
-# def get_all_window():
-#     hWndList = []
-
-#     def winEnumHandler(hwnd, hWndList):
-#         if win32gui.IsWindowVisible(hwnd):
-#             hWndList.append(hwnd)
-
-#     win32gui.EnumWindows(winEnumHandler, hWndList) 
-    
-#     return hWndList
-
-# def Get_Apps(device):
-#     if device == "":
-#         hwndList = get_all_window()
-#         titles = []
-#         for hwnd in hwndList:
-#             title = win32gui.GetWindowText(hwnd)
-#             if len(title) > 0:
-#                 titles.append(title)
-#         return titles
-#     else:
-#         # 目前没有 ios 的截图，默认非 PC 的都是 Android
-#         str_init = ''
-#         all_packages = os.popen(f"adb -s {device} shell pm list packages").readlines()
-
-#         for i in range(len(all_packages)):
-#             str_init += all_packages[i]
-
-#         package_name = re.findall('package:.*?\n',str_init,re.S)
-#         packages = []
-
-#         for package in package_name:
-#             packages.append(package[8:-1])
-
-#         return packages
+# 传绝对路径
+def Get_ScreenCapture(captureFilePath):
+    global udriver
+    udriver.TakeGameScreenCapture(captureFilePath)
 
 #开始运行脚本
 if __name__ == "__main__":
@@ -175,16 +109,24 @@ if __name__ == "__main__":
     startTime = ''
     udriver = None
     upload_time = []
-    version = ''
     app = ''
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", help="ip")  #命令行参数 -i ip地址
+    parser.add_argument("-i", help="ip address")  #命令行参数 -i ip地址
     parser.add_argument("-s", help="devices serial")  #命令行参数 -s 设备号
+    parser.add_argument("-at", help="Analyze type.This supported funprofiler or simple") # 解析类型
 
     args = parser.parse_args()
     ip = args.i or ""
     device = args.s or ""
+    analyzetype = args.at or ""
+
+    jsonPath = "./Config.json"
+
+    with open(jsonPath,"r",encoding="utf-8") as f:
+        print(type(f))
+        ConfigData = json.load(f)
+        f.close()
 
     gatherObj = StaticData.UnityProfile(serverip="10.11.144.31",port="6950",timeout=60)  #连接采集服务器
     
@@ -202,8 +144,9 @@ if __name__ == "__main__":
             
         if device == "":
                 udriver = Runner.MaRunner.MatoryConnect(device=device,connectip="127.0.0.1",port=2666,timeout=60)
-                # screenShooter = ScreenShooter(Platform.PC)
+                devicetype = "PC"
         else:
+            devicetype = "Android"
             if ip == "":
                 try:
                     res = os.popen(f"{adbPath} -s {device} shell ifconfig").read()
@@ -220,17 +163,20 @@ if __name__ == "__main__":
 
         startTime = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
 
+        # 获取游戏包版本
+        unityversion = udriver.GetGameVersion()
+
         # 开始采集
         temp_data = {"path":"D:\\files"}
         collectiondata={"collection": {},"data": {}}
         collection = {"profiler_gather":json.dumps(temp_data)}
         collectiondata["collection"]=json.dumps(collection)
         collectiondata["data"]=json.dumps({"uuid": uuID,"path": "D:\\files\\"})
-        udriver.ProfilerGather("",json.dumps(collectiondata))
-        profile() #请求开始采集
+        udriver.ProfilerGather(json.dumps(collectiondata))
+        AnalyzeToProfile() #请求开始采集
 
-        # 上传文件
-        thread = threading.Thread(target=uploadTest)
+        # 上传文件并处理采集逻辑
+        thread = threading.Thread(target=GatherUploadModule)
         thread.start()
 
         time.sleep(60)
@@ -243,6 +189,6 @@ if __name__ == "__main__":
 
 
         #关闭连接
-        # client_socket.close()
-        udriver.stop()
+        gatherObj.CloseConnect()
+        udriver.CloseConnect()
 

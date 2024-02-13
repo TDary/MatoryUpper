@@ -86,6 +86,14 @@ class MatoryConnect(object):
         return self.SendMessageModule(self.message)
 
     '''
+    获取游戏引擎版本
+    '''
+    def GetGameVersion(self)->None:
+        self.message['FuncName'] = 'GetGameVersion'
+        self.message['FuncArgs'] = []
+        return self.SendMessageModule(self.message)
+
+    '''
     寻找文本内容UI
     '''
     def FindText(self,textname:str):
@@ -147,4 +155,12 @@ class MatoryConnect(object):
     def TakeMemorySnapShot(self,type:str,filePath:str):
         self.message['FuncName'] = 'CaptureMemorySnap'
         self.message['FuncArgs'] = [f'{type}',f'{filePath}']
+        return self.SendMessageModule(self.message)
+    
+    '''
+    截取一次游戏屏幕截图
+    '''
+    def TakeGameScreenCapture(self,filePath:str):
+        self.message['FuncName'] = 'GetScreenShot'
+        self.message['FuncArgs'] = [f'{filePath}']
         return self.SendMessageModule(self.message)

@@ -2,7 +2,7 @@ import minio
 import traceback
 
 # minio服务封装函数
-class MinioSDK():
+class Minio_SDK():
     def __init__(self,url:str,bucketName:str,access_key:str,secret_key:str) -> object:
         try:
             self.bucket = bucketName

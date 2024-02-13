@@ -36,10 +36,10 @@ class UnityProfile():
 
     # 发送开始采集消息
     def SendtoBeginGather(self,sokcetObj:socket,deviceinfo:str,gameID:str,uuID:str,
-                          unityversion:str,bucketname:str,analyzetype:str,gamename:str,casename:str,collectorip:str):
+                          unityversion:str,rawfiles:str,bucketname:str,analyzetype:str,gamename:str,casename:str,collectorip:str):
         
         requestUrlStrList = [self.beginAnalyze,"&device=",deviceinfo,"&gameid=",gameID,"&uuid=",uuID,
-                      "&unityVersion=",unityversion,"&rawFiles=","&bucket=",bucketname,"&analyzeType=",analyzetype,
+                      "&unityVersion=",unityversion,"&rawFiles=",rawfiles,"&bucket=",bucketname,"&analyzeType=",analyzetype,
                       "&gameName=",gamename,"&caseName=",casename,"&collcetorIp=",collectorip]
         requestUrl = "".join(requestUrlStrList)
         return self.SendMessageModule(sokcetObj,requestUrl)
@@ -51,9 +51,9 @@ class UnityProfile():
         return self.SendMessageModule(socketObj,requestUrl)
 
     # 发送客户端请求解析消息
-    def SendtoRequestAnalyze(self,socketObj:object,uuID:str,zipfile:str,rafilename:str,unityversion:str,analyzebucket:str,analyzetype):
+    def SendtoRequestAnalyze(self,socketObj:object,uuID:str,zipfile:str,rawfilename:str,unityversion:str,analyzebucket:str,analyzetype):
         requestUrlStrList = [self.sendRequestAnalyze,"uuid=",uuID,"&rawfile=",zipfile,"&objectname=",
-                             rafilename,"&unityversion=",unityversion,"&analyzebucket=",analyzebucket,"&analyzetype=",analyzetype]
+                             rawfilename,"&unityversion=",unityversion,"&analyzebucket=",analyzebucket,"&analyzetype=",analyzetype]
         requestUrl = "".join(requestUrlStrList)
         return self.SendMessageModule(socketObj,requestUrl)
 
@@ -64,14 +64,19 @@ class UnityProfile():
         response = json.loads(self.udriver.recv(65536).decode())
         print("Receive Data:"+str(response))
         return response
+    
+    # 关闭socket连接
+    def CloseConnect(self):
+        self.udriver.close()
 
 # 自动生成uuid
 def GetUUID():
     uuid_value = uuid.uuid4()
     return uuid_value
 
-def zip_files(folder_path:str, output_path:str):
-     # 获取源文件的基本名称
+# 压缩文件
+def Zip_files(folder_path:str, output_path:str):
+    # 获取源文件的基本名称
     file_name = os.path.basename(folder_path)
     with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
         zipf.write(folder_path, arcname=file_name)
