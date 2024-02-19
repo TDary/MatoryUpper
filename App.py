@@ -2,18 +2,16 @@ from Runner import MaRunner
 import traceback
 import json
 import time
+import Init
+import argparse
 
 if __name__ == "__main__":
     try:
-        jsonPath = "./Config.json"
-
-        with open(jsonPath,"r",encoding="utf-8") as f:
-            print(type(f))
-            ConfigData = json.load(f)
-            f.close()
-        print(ConfigData["minioserver"])
-
-
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-c",help="config file path")  #命令行参数 -c 配置文件地址
+        args = parser.parse_args()
+        configPath = args.c
+        print(Init.LoadConfigFile(configPath))
         # udriver = MaRunner.MatoryConnect("192.168.0.107",2666,60)
 
         # # res = udriver.GetAllButton()["Data"]
