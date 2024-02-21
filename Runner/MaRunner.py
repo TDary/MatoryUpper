@@ -1,9 +1,10 @@
 import socket
 import time
 import json
+from Runner import *
 
 class MatoryConnect(object):
-    def __init__(self,device,connectip="127.0.0.1",port=2666,timeout=60,log_flag=False):
+    def __init__(self,device="",connectip="127.0.0.1",port=2666,timeout=60,log_flag=False):
         '''
         :param connectip: Hostname of a socket service.
         :param port: TCP Port of machine.
