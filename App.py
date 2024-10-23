@@ -48,7 +48,7 @@ if __name__ == "__main__":
         if flag == "y":
             gameID = "e40280a0"
             uid = StaticData.GetUUID()
-            print("随机生成的uuid为" + uid +",是否使用？y/n")
+            print("随机生成的uuid为" + str(uid) +",是否使用？y/n")
             choicUUID = input()
             if choicUUID == "y":
                 uuID = uid
@@ -86,7 +86,7 @@ if __name__ == "__main__":
             collectiondata["collection"]=json.dumps(collection)
             collectiondata["data"]=json.dumps({"uuid": uuID,"path": "D:\\files\\"})
             udriver.ProfilerGather(json.dumps(collectiondata))
-            AutoProfiler_Gather.AnalyzeToProfile() #请求开始采集
+            AutoProfiler_Gather.AnalyzeToProfile() #请求开始解析
 
             # 上传文件并处理采集逻辑
             thread = threading.Thread(target=AutoProfiler_Gather.GatherUploadModule)
@@ -94,6 +94,7 @@ if __name__ == "__main__":
 
             time.sleep(60)
             isStop = True
+            udriver.StopProfilerGather() #结束采集消息信号
 
             while True:
                 time.sleep(10)

@@ -71,7 +71,7 @@ class UnityProfile():
 
 # 自动生成uuid
 def GetUUID():
-    uuid_value = uuid.uuid4()
+    uuid_value = uuid.uuid4().hex
     return uuid_value
 
 # 压缩文件
