@@ -165,3 +165,13 @@ class MatoryConnect(object):
         self.message['FuncName'] = 'GetScreenShot'
         self.message['FuncArgs'] = [f'{filePath}']
         return self.SendMessageModule(self.message)
+
+    '''
+    调用游戏自定义GM
+    '''
+    def CustomGM(self,*value):
+        allargs = ','.join(value)
+        gmargs = allargs.split(',')
+        self.message["FuncName"] = 'gm'
+        self.message['FuncArgs'] = gmargs
+        return self.SendMessageModule(self.message)
