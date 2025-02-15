@@ -175,3 +175,35 @@ class MatoryConnect(object):
         self.message["FuncName"] = 'gm'
         self.message['FuncArgs'] = gmargs
         return self.SendMessageModule(self.message)
+
+    '''
+    设置UnityGameObject对象激活与失活
+    '''
+    def SetGameObjectState(self,game_objectName:str,value:bool):
+        self.message['FuncName'] = 'SetGameObjectState'
+        self.message['FuncArgs'] = [f'{game_objectName}',f'{value}']
+        return self.SendMessageModule(self.message)
+
+    '''
+    性能数据采集开始
+    '''
+    def Performance_Start(self,filePath:str,sample_arg:int):
+        self.message['FuncName'] = 'PerformanceData_Start'
+        self.message['FuncArgs'] = [f'{filePath}',f'{sample_arg}']
+        return self.SendMessageModule(self.message)
+    
+    '''
+    性能数据采集结束
+    '''
+    def Performance_Stop(self):
+        self.message['FuncName'] = 'PerformanceData_Stop'
+        self.message['FuncArgs'] = []
+        return self.SendMessageModule(self.message)
+    
+    '''
+    获取一帧性能数据
+    '''
+    def Performance_GetOne(self):
+        self.message['FuncName'] = 'PerformanceData_GetOne'
+        self.message['FuncArgs'] = []
+        return self.SendMessageModule(self.message)
