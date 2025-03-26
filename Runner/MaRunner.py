@@ -207,11 +207,3 @@ class MatoryConnect(object):
         self.message['FuncName'] = 'PerformanceData_GetOne'
         self.message['FuncArgs'] = []
         return self.SendMessageModule(self.message)
-
-    '''
-    初始化热力图点位生成工具对象
-    '''
-    def Init_PointsGenerate_Tool(self):
-        self.message['FuncName'] = 'InitScenePointTool'
-        self.message['FuncArgs'] = []
-        return self.SendMessageModule(self.message)
