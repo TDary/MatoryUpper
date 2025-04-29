@@ -126,6 +126,14 @@ class MatoryConnect(object):
         self.message['FuncArgs'] = []
         return self.SendMessageModule(self.message)
 
+        '''
+    获取Unity中的Inspector面板信息
+    '''
+    def GetProjectInspector(self,objId:int):
+        self.message['FuncName'] = 'Get_Inspector'
+        self.message['FuncArgs'] = [f'{objId}']
+        return self.SendMessageModule(self.message)
+
     '''
     触发一次UI单击操作,通过路径触发
     '''
@@ -206,4 +214,12 @@ class MatoryConnect(object):
     def Performance_GetOne(self):
         self.message['FuncName'] = 'PerformanceData_GetOne'
         self.message['FuncArgs'] = []
+        return self.SendMessageModule(self.message)
+    
+    '''
+    设置主相机位置点
+    '''
+    def SetCameraPosition(self,position:str,rotation:str):
+        self.message['FuncName'] = 'SetCamera'
+        self.message['FuncArgs'] = [f'{position}',f'{rotation}']
         return self.SendMessageModule(self.message)
