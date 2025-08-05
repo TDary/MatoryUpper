@@ -5,10 +5,17 @@ import StaticData
 import traceback
 from Runner import MaRunner
 import MinioSdk
+import StaticData
 
-# 控制采集和上传模块
-def GatherUploadModule(isStop,udriver,gameID,uuID,gatherObj,ConfigData,analyzetype,unityversion):
+# 控制上传模块
+def GatherUploadModule(devicetype,isStop,udriver,gameID,uuID,gatherObj:StaticData.UnityProfile,ConfigData,analyzetype,unityversion,gamename,casename,collectorip):
+    #请求开始采集
+    deviceinfo = StaticData.GetDevicesData(devicetype)
+    rawfiles = ""
     bucket = ConfigData["minioserver"]["rawbucket"]
+    res = gatherObj.SendtoBeginGather(sokcetObj=gatherObj,deviceinfo=deviceinfo,gameID=gameID,uuID=uuID,
+                                          unityversion=unityversion,rawfiles=rawfiles,bucketname=bucket,
+                                          analyzetype=analyzetype,gamename=gamename,casename=casename,collectorip=collectorip) 
     client = MinioSdk.Minio_SDK(url=ConfigData["minioserver"]["url"],bucketName=bucket,access_key=ConfigData["minioserver"]["access_key"],secret_key=ConfigData["minioserver"]["secret_key"])
     while True:
         time.sleep(1)
@@ -47,7 +54,6 @@ def GatherUploadModule(isStop,udriver,gameID,uuID,gatherObj,ConfigData,analyzety
                 os.remove(newnamePath)
 
         if isStop == True:
-            udriver.profile_stop() #发送停止采集消息
             #停止采集，并把最后一个源文件记录下来
             if len(fileslist) !=0:
                 thelastFile = fileslist[len(fileslist) - 1]
@@ -55,20 +61,6 @@ def GatherUploadModule(isStop,udriver,gameID,uuID,gatherObj,ConfigData,analyzety
                 gatherObj.SendtoStopGather(socketObj=gatherObj,uuID=uuID,lastfile=thelastFile)
             break
 
-
-#数据解析+上传设备信息
-def AnalyzeToProfile(gameID,unityversion,gatherObj,uuID,devicetype,ConfigData):
-    try:
-        rawfiles = ""
-        analyzetype = "funprofiler"
-        deviceinfo = StaticData.GetDevicesData(devicetype)
-        res = gatherObj.SendtoBeginGather(sokcetObj=gatherObj,deviceinfo=deviceinfo,gameID=gameID,uuID=uuID,
-                                          unityversion=unityversion,rawfiles=rawfiles,bucketname=ConfigData["minioserver"]["rawbucket"],
-                                          analyzetype=analyzetype,gamename="CB",casename="ceshi",collectorip="192.168.0.110") 
-        return res
-
-    except Exception as e:
-        traceback.print_exception(e)
 
 # 传绝对路径
 def Get_ScreenCapture(captureFilePath,udriver):

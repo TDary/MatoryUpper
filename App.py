@@ -39,9 +39,9 @@ if __name__ == "__main__":
         device = args.s or ""
         analyzetype = args.at or ""
         configPath = args.c or ""
-
-        print(Init.LoadConfigFile(configPath))
-        gatherObj = StaticData.UnityProfile(serverip="10.11.144.31",port="6950",timeout=60)  #连接采集服务器
+        configData = Init.LoadConfigFile(configPath)
+        print(configData)
+        gatherObj = StaticData.UnityProfile(serverip="10.11.145.125",port="6950",timeout=60)  #连接Master服务器
         
         print("您是否开启采集数据功能？y/n")
         flag = input()
@@ -86,10 +86,11 @@ if __name__ == "__main__":
             collectiondata["collection"]=json.dumps(collection)
             collectiondata["data"]=json.dumps({"uuid": uuID,"path": "D:\\files\\"})
             udriver.ProfilerGather(json.dumps(collectiondata))
-            AutoProfiler_Gather.AnalyzeToProfile() #请求开始解析
 
-            # 上传文件并处理采集逻辑
-            thread = threading.Thread(target=AutoProfiler_Gather.GatherUploadModule)
+            # 采集上传文件处理逻辑
+            thread = threading.Thread(target=AutoProfiler_Gather.GatherUploadModule(devicetype=devicetype,isStop=isStop,udriver=udriver,gameID=gameID,uuID=uuID,
+                                                                                    gatherObj=gatherObj,ConfigData=configData,analyzetype=analyzetype,unityversion=unityversion,
+                                                                                    gamename="MechaBREAK",casename="ceshi",collectorip="10.11.145.125"))
             thread.start()
 
             time.sleep(60)

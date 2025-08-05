@@ -8,8 +8,8 @@ import time
 
 class UnityProfile():
     def __init__(self,serverip:str,port:str,timeout=60):
-        self.beginAnalyze = "startanalyze?"
-        self.endGather = "stopanalyze?"
+        self.beginGather = "startgather?"
+        self.endGather = "stopgather?"
         self.sendRequestAnalyze = "requestanalyze?"
         self.connectState = False
         while timeout > 0:
@@ -38,7 +38,7 @@ class UnityProfile():
     def SendtoBeginGather(self,sokcetObj:socket,deviceinfo:str,gameID:str,uuID:str,
                           unityversion:str,rawfiles:str,bucketname:str,analyzetype:str,gamename:str,casename:str,collectorip:str):
         
-        requestUrlStrList = [self.beginAnalyze,"&device=",deviceinfo,"&gameid=",gameID,"&uuid=",uuID,
+        requestUrlStrList = [self.beginGather,"&device=",deviceinfo,"&gameid=",gameID,"&uuid=",uuID,
                       "&unityVersion=",unityversion,"&rawFiles=",rawfiles,"&bucket=",bucketname,"&analyzeType=",analyzetype,
                       "&gameName=",gamename,"&caseName=",casename,"&collcetorIp=",collectorip]
         requestUrl = "".join(requestUrlStrList)
