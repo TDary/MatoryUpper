@@ -84,7 +84,7 @@ if __name__ == "__main__":
             collectiondata={"collection": {},"data": {}}
             collection = {"profiler_gather":json.dumps(temp_data)}
             collectiondata["collection"]=json.dumps(collection)
-            collectiondata["data"]=json.dumps({"uuid": uuID,"path": "D:\\files\\"})
+            collectiondata["data"]=json.dumps({"uuid": uuID,"path": "F:\\files\\"})
             udriver.ProfilerGather(json.dumps(collectiondata))
 
             # 采集上传文件处理逻辑
@@ -93,7 +93,7 @@ if __name__ == "__main__":
                                                                                     gamename="MechaBREAK",casename="ceshi",collectorip="10.11.145.125"))
             thread.start()
 
-            time.sleep(60)
+            time.sleep(50)
             isStop = True
             udriver.StopProfilerGather() #结束采集消息信号
 

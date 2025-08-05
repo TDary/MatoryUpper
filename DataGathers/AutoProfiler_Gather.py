@@ -1,11 +1,10 @@
 import os
 import time
 import json
-import StaticData
 import traceback
 from Runner import MaRunner
-import MinioSdk
-import StaticData
+from DataGathers import MinioSdk
+from DataGathers import StaticData
 
 # 控制上传模块
 def GatherUploadModule(devicetype,isStop,udriver,gameID,uuID,gatherObj:StaticData.UnityProfile,ConfigData,analyzetype,unityversion,gamename,casename,collectorip):
@@ -21,8 +20,8 @@ def GatherUploadModule(devicetype,isStop,udriver,gameID,uuID,gatherObj:StaticDat
         time.sleep(1)
         record = udriver.CheckProfiler()
         fileslist = []
-        if record["ubox"]!=[]:
-            datas = json.loads(record["ubox"])
+        if record["profiler_gather"]!=[]:
+            datas = json.loads(record["profiler_gather"])
             for file in datas:
                 current_timestamp = int(time.time())
 

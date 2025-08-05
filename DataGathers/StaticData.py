@@ -12,6 +12,8 @@ class UnityProfile():
         self.endGather = "stopgather?"
         self.sendRequestAnalyze = "requestanalyze?"
         self.connectState = False
+        self.TCP_PORT = port
+        self.TCP_IP = serverip
         while timeout > 0:
             try:
                 self.udriver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
