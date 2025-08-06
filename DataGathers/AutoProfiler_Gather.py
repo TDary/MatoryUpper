@@ -12,7 +12,7 @@ def GatherUploadModule(devicetype,isStop,udriver,gameID,uuID,gatherObj:StaticDat
     deviceinfo = StaticData.GetDevicesData(devicetype)
     rawfiles = ""
     bucket = ConfigData["minioserver"]["rawbucket"]
-    res = gatherObj.SendtoBeginGather(sokcetObj=gatherObj,deviceinfo=deviceinfo,gameID=gameID,uuID=uuID,
+    res = gatherObj.SendtoBeginGather(deviceinfo=deviceinfo,gameID=gameID,uuID=uuID,
                                           unityversion=unityversion,rawfiles=rawfiles,bucketname=bucket,
                                           analyzetype=analyzetype,gamename=gamename,casename=casename,collectorip=collectorip) 
     client = MinioSdk.Minio_SDK(url=ConfigData["minioserver"]["url"],bucketName=bucket,access_key=ConfigData["minioserver"]["access_key"],secret_key=ConfigData["minioserver"]["secret_key"])

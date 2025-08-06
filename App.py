@@ -41,7 +41,7 @@ if __name__ == "__main__":
         configPath = args.c or ""
         configData = Init.LoadConfigFile(configPath)
         print(configData)
-        gatherObj = StaticData.UnityProfile(serverip="10.11.145.125",port="6950",timeout=60)  #连接Master服务器
+        gatherObj = StaticData.UnityProfile(serverip="10.11.145.125",port=6950,timeout=60)  #连接Master服务器
         
         print("您是否开启采集数据功能？y/n")
         flag = input()
@@ -72,7 +72,7 @@ if __name__ == "__main__":
                             res = os.popen(f'{adbPath} -s {device} shell netstat').read()
                             ip = res.split('udp')[1].split(':bootpc')[0].split(' ')[-1]
 
-                udriver = MaRunner.MatoryConnect(device,ip,por=13000,timeout=60)
+                udriver = MaRunner.MatoryConnect(device,ip,por=2666,timeout=60)
 
             startTime = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
 
@@ -80,16 +80,15 @@ if __name__ == "__main__":
             unityversion = udriver.GetGameVersion()
 
             # 开始采集
-            temp_data = {"path":"D:\\files"}
             collectiondata={"collection": {},"data": {}}
-            collection = {"profiler_gather":json.dumps(temp_data)}
-            collectiondata["collection"]=json.dumps(collection)
-            collectiondata["data"]=json.dumps({"uuid": uuID,"path": "F:\\files\\"})
+            # temp_data = {"path":"F:\\files"}
+            collectiondata["collection"]=json.dumps({"profiler_gather":""})
+            collectiondata["data"]=json.dumps({"uuid": uuID,"path": "D:\\files"})
             udriver.ProfilerGather(json.dumps(collectiondata))
 
             # 采集上传文件处理逻辑
             thread = threading.Thread(target=AutoProfiler_Gather.GatherUploadModule(devicetype=devicetype,isStop=isStop,udriver=udriver,gameID=gameID,uuID=uuID,
-                                                                                    gatherObj=gatherObj,ConfigData=configData,analyzetype=analyzetype,unityversion=unityversion,
+                                                                                    gatherObj=gatherObj,ConfigData=configData,analyzetype=analyzetype,unityversion=str(unityversion),
                                                                                     gamename="MechaBREAK",casename="ceshi",collectorip="10.11.145.125"))
             thread.start()
 
@@ -102,7 +101,7 @@ if __name__ == "__main__":
                 if thread.is_alive() !=True:
                     break
 
-
+ 
             #关闭连接
             gatherObj.CloseConnect()
             udriver.CloseConnect()

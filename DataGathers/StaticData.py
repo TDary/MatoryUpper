@@ -7,63 +7,63 @@ import json
 import time
 
 class UnityProfile():
-    def __init__(self,serverip:str,port:str,timeout=60):
+    def __init__(self,serverip:str,port:int,timeout=60):
         self.beginGather = "startgather?"
         self.endGather = "stopgather?"
         self.sendRequestAnalyze = "requestanalyze?"
         self.connectState = False
         self.TCP_PORT = port
         self.TCP_IP = serverip
+        self.udriver = None
         while timeout > 0:
             try:
                 self.udriver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.udriver.connect((serverip, port))
+                self.udriver.connect((self.TCP_IP, self.TCP_PORT))
                 self.udriver.settimeout(timeout)
 
                 self.connectState = True
                 time.sleep(1)
                 message = 'markeid?collector'
-                self.SendMessageModule(self.udriver,message)
-                
-                return self.udriver
+                self.udriver.sendall(message.encode())
+                res = self.udriver.recv(1024).decode()
+                print("连接成功，ReceiveData：" + res)
+                break
             except Exception as e:
                 print(e)
-                print('MatoryServer not running on port ' + str(self.TCP_PORT) +
-                      ', retrying (timing out in ' + str(timeout) + ' secs)...')
                 timeout -= timeout
                 # time.sleep(timeout)
 
         if timeout <= 0:
-            raise Exception('Connecting Timeout，Could not connect to MatoryServer on: '+ self.TCP_IP +':'+ str(self.TCP_PORT))
+            raise Exception('Connecting Timeout，Could not connect to MasterServer on: '+ self.TCP_IP +':'+ str(self.TCP_PORT))
 
     # 发送开始采集消息
-    def SendtoBeginGather(self,sokcetObj:socket,deviceinfo:str,gameID:str,uuID:str,
+    def SendtoBeginGather(self,deviceinfo:str,gameID:str,uuID:str,
                           unityversion:str,rawfiles:str,bucketname:str,analyzetype:str,gamename:str,casename:str,collectorip:str):
         
         requestUrlStrList = [self.beginGather,"&device=",deviceinfo,"&gameid=",gameID,"&uuid=",uuID,
                       "&unityVersion=",unityversion,"&rawFiles=",rawfiles,"&bucket=",bucketname,"&analyzeType=",analyzetype,
                       "&gameName=",gamename,"&caseName=",casename,"&collcetorIp=",collectorip]
         requestUrl = "".join(requestUrlStrList)
-        return self.SendMessageModule(sokcetObj,requestUrl)
+        return self.SendMessageModule(requestUrl)
     
     # 发送停止采集消息
-    def SendtoStopGather(self,socketObj:object,uuID:str,lastfile:str):
+    def SendtoStopGather(self,uuID:str,lastfile:str):
         requestUrlStrList = [self.endGather,"uuid=",uuID,"&lastfile=",lastfile]
         requestUrl = "".join(requestUrlStrList)
-        return self.SendMessageModule(socketObj,requestUrl)
+        return self.SendMessageModule(requestUrl)
 
     # 发送客户端请求解析消息
-    def SendtoRequestAnalyze(self,socketObj:object,uuID:str,zipfile:str,rawfilename:str,unityversion:str,analyzebucket:str,analyzetype):
+    def SendtoRequestAnalyze(self,uuID:str,zipfile:str,rawfilename:str,unityversion:str,analyzebucket:str,analyzetype):
         requestUrlStrList = [self.sendRequestAnalyze,"uuid=",uuID,"&rawfile=",zipfile,"&objectname=",
                              rawfilename,"&unityversion=",unityversion,"&analyzebucket=",analyzebucket,"&analyzetype=",analyzetype]
         requestUrl = "".join(requestUrlStrList)
-        return self.SendMessageModule(socketObj,requestUrl)
+        return self.SendMessageModule(requestUrl)
 
     # 发送socket消息
-    def SendMessageModule(self,sokcetObj:socket,msg:str):
+    def SendMessageModule(self,msg:str):
         print("Send Msg:"+msg)
-        sokcetObj.sendall(msg.encode())
-        response = json.loads(self.udriver.recv(65536).decode())
+        self.udriver.sendall(msg.encode())
+        response = self.udriver.recv(1024).decode()
         print("Receive Data:"+str(response))
         return response
     
