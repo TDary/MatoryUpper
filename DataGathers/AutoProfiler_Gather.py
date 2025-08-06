@@ -27,7 +27,9 @@ def GatherUploadModule(devicetype,stopEvent:threading.Event,udriver:MaRunner.Mat
                     current_timestamp = int(time.time())
                     strcurrent_timestamp = str(current_timestamp)
                     path = os.path.join(file['path'],file['name'] + ".raw") # 本地文件路径
-
+                    if not os.path.exists(path):
+                        print(f"文件 {path} 不存在，跳过当前文件")
+                        continue
                     newnamePath = os.path.join(file['path'],strcurrent_timestamp + ".raw")
                     os.rename(path,newnamePath)
 
