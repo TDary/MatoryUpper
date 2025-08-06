@@ -21,7 +21,7 @@ if __name__ == "__main__":
         gameID = ''   
         uuID = ''
         uid = ''
-        isStop = False
+        isStop = threading.Event()
         recordlist = []
         startTime = ''
         udriver = None
@@ -78,6 +78,11 @@ if __name__ == "__main__":
 
             # 获取游戏包版本
             unityversion = udriver.GetGameVersion()
+            if unityversion["Code"] == 200:
+                unityversion = unityversion['Data']
+            
+            # 获取设备信息
+            deviceinfo = StaticData.GetDevicesData(devicetype)
 
             # 开始采集
             collectiondata={"collection": {},"data": {}}
@@ -87,23 +92,19 @@ if __name__ == "__main__":
             udriver.ProfilerGather(json.dumps(collectiondata))
 
             # 采集上传文件处理逻辑
-            thread = threading.Thread(target=AutoProfiler_Gather.GatherUploadModule(devicetype=devicetype,isStop=isStop,udriver=udriver,gameID=gameID,uuID=uuID,
-                                                                                    gatherObj=gatherObj,ConfigData=configData,analyzetype=analyzetype,unityversion=str(unityversion),
-                                                                                    gamename="MechaBREAK",casename="ceshi",collectorip="10.11.145.125"))
+            thread = threading.Thread(target=AutoProfiler_Gather.GatherUploadModule,args=(deviceinfo,isStop,udriver,gameID,uuID,
+                                                                                          gatherObj,configData,analyzetype,str(unityversion),"MechaBREAK","ceshi","10.11.145.125"))
             thread.start()
 
-            time.sleep(50)
-            isStop = True
+            time.sleep(50)  # 运行其他逻辑
+            isStop.set() # 停止采集信号
             udriver.StopProfilerGather() #结束采集消息信号
 
-            while True:
-                time.sleep(10)
-                if thread.is_alive() !=True:
-                    break
+            thread.join()  # 等待线程结束
+            print("采集结束")
 
- 
             #关闭连接
             gatherObj.CloseConnect()
             udriver.CloseConnect()
     except:
-        traceback.print_exception()
+        traceback.print_exc()

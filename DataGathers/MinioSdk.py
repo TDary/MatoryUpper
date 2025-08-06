@@ -3,16 +3,14 @@ import traceback
 
 # minio服务封装函数
 class Minio_SDK():
-    def __init__(self,url:str,bucketName:str,access_key:str,secret_key:str) -> object:
+    def __init__(self,url:str,bucketName:str,access_key:str,secret_key:str):
+        self.minio_client = None
+        self.bucket = bucketName
         try:
-            self.bucket = bucketName
-            self.minio_client = None
-            minioclient = minio.Minio(endpoint=url,access_key=access_key,secret_key=secret_key,secure=False)
-            self.minio_client = minioclient
-            return minioclient
+            self.minio_client = minio.Minio(endpoint=url,access_key=access_key,secret_key=secret_key,secure=False)
+            print("Minio SDK连接成功")
         except:
             traceback.print_exception()
-            return None
         
     # 上传一个元素
     def UploadItem(self,objName:str,filePath:str,contentType:str):
