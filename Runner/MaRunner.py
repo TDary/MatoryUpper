@@ -223,3 +223,69 @@ class MatoryConnect(object):
         self.message['FuncName'] = 'SetCamera'
         self.message['FuncArgs'] = [f'{position}',f'{rotation}']
         return self.SendMessageModule(self.message)
+    
+    '''
+    设置游戏物体激活与失活
+    '''
+    def SetGameObjectState(self,objectname:str,value:bool):
+        self.message['FuncName'] = 'SetGameObjectState'
+        self.message['FuncArgs'] = [f'{objectname}',f'{value}']
+        return self.SendMessageModule(self.message)
+    
+    '''
+    开始采集性能数据,输出结果路径以及采样模式，1为每帧写入模式，0为不写入需自己获取单帧
+    '''
+    def StartPerfData(self,outputpath:str,sample_arg:int):
+        self.message['FuncName'] = 'PerformanceData_Start'
+        self.message['FuncArgs'] = [f'{outputpath}',f'{sample_arg}']
+        return self.SendMessageModule(self.message)
+
+    '''
+    停止采集性能数据
+    '''
+    def StopPerfData(self):
+        self.message['FuncName'] = 'PerformanceData_Stop'
+        self.message['FuncArgs'] = []
+        return self.SendMessageModule(self.message)
+
+    '''
+    获取一帧性能数据
+    '''
+    def GetOnePerfData(self):
+        self.message['FuncName'] = 'PerformanceData_GetOne'
+        self.message['FuncArgs'] = []
+        return self.SendMessageModule(self.message)
+
+    '''
+    开始UI录制
+    '''
+    def StartUIRecord(self):
+        self.message['FuncName'] = 'Start_UIRecord'
+        self.message['FuncArgs'] = []
+        return self.SendMessageModule(self.message)
+
+    '''
+    停止UI录制
+    '''
+    def StopUIRecord(self):
+        self.message['FuncName'] = 'Stop_UIRecord'
+        self.message['FuncArgs'] = []
+        return self.SendMessageModule(self.message)
+    
+    '''
+    开始DTrace追踪
+    '''
+    def StartDTrace(self):
+        self.message['FuncName'] = 'Start_DTracker'
+        self.message['FuncArgs'] = []
+        return self.SendMessageModule(self.message)
+    
+    '''
+    设置DTrace内存以及快照路径
+    '''
+    def SetDTracePath(self,filePath:str,maxMemory:float):
+        self.message['FuncName'] = 'Set_DTrackerLimit'
+        self.message['FuncArgs'] = [f'{filePath}',f'{maxMemory}']
+        return self.SendMessageModule(self.message)
+    
+    # def 
