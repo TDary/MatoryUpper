@@ -52,8 +52,9 @@ class MatoryConnect(object):
         msg = json.dumps(message)
         print("Send Msg:"+msg)
         self.udriver.sendall(msg.encode())
-        response = json.loads(self.udriver.recv(65536).decode())
-        print("Receive Data:"+str(response))
+        resData = self.udriver.recv(65536).decode()
+        print("Receive Data:"+str(resData))
+        response = json.loads(resData)
         return response
 
     '''
