@@ -58,6 +58,8 @@ class MatoryConnect(object):
         chunks = []
         while True:
             data = self.udriver.recv(65536).decode()
+            if not data:
+                raise ConnectionError("Socket connection closed by remote end while receiving response")
             chunks.append(data)
             try:
                 json.loads("".join(chunks))
