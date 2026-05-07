@@ -109,7 +109,7 @@ class MatoryConnect(object):
         return self.SendMessageModule(self._build_message('Get_Inspector', [str(objId)]))
 
     def ClickButtonByPath(self, UIPath: str):
-        return self.SendMessageModule(self._build_message('ClickOne', ['leftclick', UIPath, 'path']))
+        return self.SendMessageModule(self._build_message('ClickOne', ['click', UIPath, 'path']))
 
     def ClickButtonById(self, id: int):
         return self.SendMessageModule(self._build_message('ClickOne', ['click', str(id), 'id']))
