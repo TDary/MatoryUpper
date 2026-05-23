@@ -22,13 +22,18 @@ class MatoryConnect(object):
                 self.udriver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.udriver.settimeout(connect_timeout)
 
+                connected = False
                 for p in range(self.TCP_PORT, self.TCP_PORT + 5):
                     try:
                         self.udriver.connect((connectip, p))
                         self.TCP_PORT = p
+                        connected = True
                         break
                     except ConnectionRefusedError:
                         print(f"连接{p}失败，尝试下一个端口")
+
+                if not connected:
+                    raise ConnectionRefusedError(f"所有端口 {self.TCP_PORT}-{self.TCP_PORT + 4} 连接失败")
 
                 self.udriver.settimeout(original_timeout)
                 self.connect = True

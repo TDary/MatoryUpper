@@ -21,10 +21,10 @@ if __name__ == "__main__":
         # time.sleep(1)
         # udriver.CustomGM("SetSnapPath","D:/myTest.snp")
         # time.sleep(1)
-        # udriver.CustomGM("StartMonitor")
+        udriver.CustomGM("click_ui_button","UIMainMenuForm","LevelSelect")
         # time.sleep(5)
         # udriver.FindText("选择关卡")
-        udriver.ClickButtonByPath("/GameFramework/Builtin/UI/UI Form Instances/UI Group - MainMenu/UILevelSelectForm(Clone)/Levels/Scroll/Layout/LevelSelectionButton(Clone)")
+        # udriver.ClickButtonByPath("/GameFramework/Builtin/UI/UI Form Instances/UI Group - MainMenu/UILevelSelectForm(Clone)/Levels/Scroll/Layout/LevelSelectionButton(Clone)")
         udriver.CloseConnect()
     except:
         traceback.print_exc()
